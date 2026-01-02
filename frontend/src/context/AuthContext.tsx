@@ -30,16 +30,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         if (token) {
-            // Ideally fetch user profile here. For now, we simulate user presence if token exists.
-            // Or decode JWT.
-            // Let's assume we want to fetch profile separately or just set user state if needed.
-            // For simplicity, we just set loading to false.
-            // To do it properly, let's assume we might decode or fetch.
-            // Simplest: loading=false. Login sets user.
-            setLoading(false);
-        } else {
-            setLoading(false);
+            // Optimistically set user to trigger dependent components (like Dashboard fetch)
+            // Ideally we would verify token or fetch profile here.
+            setUser({ username: 'User', email: '' });
         }
+        setLoading(false);
     }, []);
 
     const login = (access: string, refresh: string) => {
@@ -47,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem('refresh_token', refresh);
         // Decode token or fetch user here if needed
         setUser({ username: 'User', email: '' }); // Placeholder until profile endpoint
-        router.push('/dashboard');
+        router.push('/');
     };
 
     const logout = () => {

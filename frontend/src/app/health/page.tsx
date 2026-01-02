@@ -6,9 +6,20 @@ import { Activity, Moon, Zap, Dumbbell, LayoutDashboard, CheckSquare, Graduation
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import Link from 'next/link';
 
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+
 export default function HealthPage() {
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [logs, setLogs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, authLoading, router]);
 
     // Form
     const [sleep, setSleep] = useState(7);
@@ -56,7 +67,7 @@ export default function HealthPage() {
     }));
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white p-6 pb-24">
+        <div className="min-h-screen bg-gray-950 text-white p-6">
             <header className="mb-6">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-teal-600 bg-clip-text text-transparent">Health Tracker</h1>
             </header>
@@ -140,29 +151,6 @@ export default function HealthPage() {
                 </div>
             </section>
 
-            {/* Bottom Nav */}
-            <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 flex justify-around py-4 pb-6 z-50">
-                <Link href="/dashboard" className="flex flex-col items-center text-gray-500 hover:text-gray-300">
-                    <LayoutDashboard className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Home</span>
-                </Link>
-                <Link href="/tasks" className="flex flex-col items-center text-gray-500 hover:text-gray-300">
-                    <CheckSquare className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Tasks</span>
-                </Link>
-                <Link href="/health" className="flex flex-col items-center text-green-500">
-                    <Activity className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Health</span>
-                </Link>
-                <Link href="/learning" className="flex flex-col items-center text-gray-500 hover:text-gray-300">
-                    <GraduationCap className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Learn</span>
-                </Link>
-                <Link href="/finance" className="flex flex-col items-center text-gray-500 hover:text-gray-300">
-                    <DollarSign className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Finance</span>
-                </Link>
-            </nav>
         </div>
     );
 }

@@ -14,11 +14,22 @@ interface Course {
     status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 }
 
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+
 export default function LearningPage() {
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
     const [isAppOpen, setIsAddOpen] = useState(false);
     const [isLogOpen, setIsLogOpen] = useState(false);
     const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, authLoading, router]);
 
     // Form States
     const [name, setName] = useState('');
@@ -97,7 +108,7 @@ export default function LearningPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white p-6 pb-24">
+        <div className="min-h-screen bg-gray-950 text-white p-6">
             <header className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent">Learning Path</h1>
@@ -163,8 +174,8 @@ export default function LearningPage() {
 
             {/* Add Modal */}
             {isAppOpen && (
-                <div className="fixed inset-0 bg-black/80 flex items-end sm:items-center justify-center z-50 p-4">
-                    <div className="bg-gray-900 w-full max-w-md rounded-2xl p-6 border border-gray-700 animate-slide-up">
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div className="bg-gray-900 w-full max-w-md rounded-2xl p-6 border border-gray-700">
                         <h2 className="text-xl font-bold mb-4">Start New Course</h2>
                         <form onSubmit={handleCreateCourse} className="space-y-4">
                             <div>
@@ -204,7 +215,7 @@ export default function LearningPage() {
             {/* Log Modal */}
             {isLogOpen && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                    <div className="bg-gray-900 w-full max-w-md rounded-2xl p-6 border border-gray-700 animate-slide-up">
+                    <div className="bg-gray-900 w-full max-w-md rounded-2xl p-6 border border-gray-700">
                         <h2 className="text-xl font-bold mb-4">Log Learning Time</h2>
                         <form onSubmit={handleLogTime} className="space-y-4">
                             <div>
@@ -233,29 +244,6 @@ export default function LearningPage() {
                 </div>
             )}
 
-            {/* Bottom Nav */}
-            <nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 flex justify-around py-4 pb-6 z-50">
-                <Link href="/dashboard" className="flex flex-col items-center text-gray-500 hover:text-gray-300">
-                    <LayoutDashboard className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Home</span>
-                </Link>
-                <Link href="/tasks" className="flex flex-col items-center text-gray-500 hover:text-gray-300">
-                    <CheckSquare className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Tasks</span>
-                </Link>
-                <Link href="/health" className="flex flex-col items-center text-gray-500 hover:text-gray-300">
-                    <Activity className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Health</span>
-                </Link>
-                <Link href="/learning" className="flex flex-col items-center text-indigo-500">
-                    <GraduationCap className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Learn</span>
-                </Link>
-                <Link href="/finance" className="flex flex-col items-center text-gray-500 hover:text-gray-300">
-                    <DollarSign className="w-6 h-6" />
-                    <span className="text-[10px] mt-1">Finance</span>
-                </Link>
-            </nav>
         </div>
     );
 }
